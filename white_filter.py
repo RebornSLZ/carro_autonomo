@@ -10,6 +10,7 @@ Controles:
 import cv2
 import numpy as np
 import time
+import motores
 
 
 def criar_trackbars(janela: str) -> None:
@@ -64,10 +65,13 @@ def filtrar_branco(frame: np.ndarray, s_max: int, v_min: int) -> np.ndarray:
 
 
 def main() -> None:
+    motores.iniciar()
+
     cap = cv2.VideoCapture(1, cv2.CAP_MSMF)
     if not cap.isOpened():
         cap = cv2.VideoCapture(1)
     if not cap.isOpened():
+        motores.encerrar()
         raise RuntimeError("Não foi possível abrir a câmera.")
 
     janela = "Filtro Branco"
@@ -75,8 +79,6 @@ def main() -> None:
     criar_trackbars(janela)
 
     print(" Q  para sair  |  S  para salvar")
-
-    ultimo_print = 0.0
 
     while True:
         ok, frame = cap.read()
@@ -89,17 +91,12 @@ def main() -> None:
 
         agora = time.time()
 
-        #Substituir pela potência dos motores
-        if agora - ultimo_print >= 0.5:
-            if toca_vermelho:
-                print("DIREITA") #Direção da correção do carro para a direita
-                ultimo_print = agora
-            elif toca_azul:
-                print("ESQUERDA") #Direção da correção do carro para a esquerda
-                ultimo_print = agora
-            else:
-                print("RETO") #Segue reto caso não tenha correção
-                ultimo_print = agora
+        if toca_vermelho:
+            motores.servo_direita()
+        elif toca_azul:
+            motores.servo_esquerda()
+        else:
+            motores.servo_centro()
 
         # Empilha original | máscara | resultado lado a lado
         mask_bgr = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
@@ -117,6 +114,7 @@ def main() -> None:
 
     cap.release()
     cv2.destroyAllWindows()
+    motores.encerrar()
 
 
 if __name__ == "__main__":
