@@ -1,7 +1,7 @@
 """
 Controle de motores — 2 DC (propulsão) + 1 servo (direção)
 
-Pinagem padrão (ajuste as constantes abaixo se necessário):
+Pinagem:
 
     Propulsão — L298N  →  GPIO (BCM)
     ──────────────────────────────────
@@ -16,7 +16,7 @@ Pinagem padrão (ajuste as constantes abaixo se necessário):
     ──────────────────────────────
     Sinal  →  18   (PWM 50 Hz)
 
-Servo: duty cycle para 50 Hz (período = 20 ms)
+Servo: duty cycle (porcentagem do tempo em que o sinal fica ligado) para 50 Hz (período = 20 ms)
     Esquerda →  5.0 %  (~1.0 ms)
     Centro   →  7.5 %  (~1.5 ms)
     Direita  → 10.0 %  (~2.0 ms)
@@ -30,9 +30,14 @@ API pública:
     encerrar()                — libera GPIO
 """
 
-import RPi.GPIO as GPIO
 
-# ── Pinos (BCM) ────────────────────────────────────────────────────────────────
+#Testa se tem GPIO, caso não tenha, entra em mockup
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    from fake_rpi.RPi import GPIO
+
+# Pinos (BCM)
 ENA = 12
 IN1 = 23
 IN2 = 24
@@ -43,11 +48,11 @@ IN4 = 22
 
 SERVO_PIN = 18
 
-# ── Parâmetros de propulsão ───────────────────────────────────────────────────
+# Parâmetros de propulsão
 FREQ_MOTOR_HZ = 1000
 VEL_BASE      = 70     # duty cycle em reta (0–100)
 
-# ── Parâmetros do servo (50 Hz) ───────────────────────────────────────────────
+# Parâmetros do servo (50 Hz) 
 FREQ_SERVO_HZ   = 50
 SERVO_ESQUERDA  = 5.0   # duty cycle → ~1.0 ms
 SERVO_CENTRO    = 7.5   # duty cycle → ~1.5 ms
@@ -79,19 +84,17 @@ def iniciar(velocidade_base: int = VEL_BASE) -> None:
     _pwm_servo.start(SERVO_CENTRO)   # inicia com direção centralizada
 
 
-# ── Motores de propulsão ──────────────────────────────────────────────────────
+# Motores de propulsão
 
 def _motor_esquerdo(duty: int) -> None:
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.LOW)
     _pwm_esq.ChangeDutyCycle(duty)
 
-
 def _motor_direito(duty: int) -> None:
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.LOW)
     _pwm_dir.ChangeDutyCycle(duty)
-
 
 def _parar_motores() -> None:
     GPIO.output(IN1, GPIO.LOW)
@@ -102,7 +105,7 @@ def _parar_motores() -> None:
     _pwm_dir.ChangeDutyCycle(0)
 
 
-# ── Servo de direção ──────────────────────────────────────────────────────────
+# Servo de direção
 
 def _servo(duty: float) -> None:
     _pwm_servo.ChangeDutyCycle(duty)
@@ -120,7 +123,7 @@ def servo_centro() -> None:
     _servo(SERVO_CENTRO)
 
 
-# ── Comandos principais ───────────────────────────────────────────────────────
+# Comandos principais
 
 def frente() -> None:
     """Segue reto: servo centralizado, ambos os motores na velocidade base."""

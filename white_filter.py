@@ -5,6 +5,7 @@ Controles:
   S          — salvar frame atual
   trackbars  — ajustar range do branco em tempo real
 
+  *Adicionar mais comandos pra controle do carro*
 """
 
 import cv2
@@ -57,7 +58,7 @@ def filtrar_branco(frame: np.ndarray, s_max: int, v_min: int) -> np.ndarray:
         cv2.line(img, (x2, 0), (x2, h), cor_linha, espessura)
         cv2.line(img, (xm, 0), (xm, h), cor_linha, espessura)
 
-    # Verifica se há branco nas zonas coloridas
+    # Verifica se tem branco nas divisões coloridas
     toca_vermelho = cv2.countNonZero(mask[:, x1:xm]) > 0
     toca_azul     = cv2.countNonZero(mask[:, xm:x2]) > 0
 
@@ -67,9 +68,9 @@ def filtrar_branco(frame: np.ndarray, s_max: int, v_min: int) -> np.ndarray:
 def main() -> None:
     motores.iniciar()
 
-    cap = cv2.VideoCapture(1, cv2.CAP_MSMF)
+    cap = cv2.VideoCapture(0, cv2.CAP_MSMF)
     if not cap.isOpened():
-        cap = cv2.VideoCapture(1)
+        cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         motores.encerrar()
         raise RuntimeError("Não foi possível abrir a câmera.")
