@@ -57,7 +57,7 @@ def save_calibration(tag_size_m, focal_length_px):
 
 def main():
     print("Calibração da câmera com AprilTag")
-    print("Use a mesma tag e a mesma resolução da câmera depois no apriltag.py.\n")
+    print("Use a mesma tag e a mesma resolução da câmera depois no sign_detection.py.\n")
 
     tag_size_m = ask_float(
         f"Medida com comprimento da tag em metros [{DEFAULT_TAG_SIZE_M}]: ",

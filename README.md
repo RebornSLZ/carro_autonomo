@@ -78,21 +78,22 @@ O script pede o tamanho real da AprilTag e a distância de referência, detecta 
 ### Teste da câmera
 
 ```bash
-python apriltag.py
+python sign_detection.py
 ```
 
-O script identifica as AprilTags pela câmera e imprime no terminal o ID da tag e a distância aproximada.
+O script identifica as AprilTags pela câmera e imprime no terminal o ID da tag, a placa associada e a distância aproximada.
 
 ## Estrutura do projeto
 
 ```
 .
-├── apriltag.py              # Detecção de AprilTags e distância no terminal
 ├── camera_calibration.json  # Dados gerados pela calibração da câmera
 ├── camera_calibration.py    # Calibração da câmera usando uma AprilTag de referência
 ├── motores.py               # Controle dos motores DC e do servo via GPIO/PWM
 ├── pyproject.toml           # Metadados e dependências do projeto
 ├── requirements.txt         # Dependências do projeto para uso com pip
+├── sign_detection.py        # Detecção de placas por AprilTags no terminal
+├── signs_id.json            # Relação entre IDs das AprilTags e placas
 ├── uv.lock                  # Lockfile de dependências do uv
 └── white_filter.py          # Captura de câmera, filtro de branco e lógica de direção
 ```

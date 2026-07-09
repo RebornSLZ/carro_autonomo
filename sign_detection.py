@@ -7,6 +7,7 @@ import numpy as np
 
 
 CALIBRATION_FILE = Path("camera_calibration.json")
+TAG_ACTIONS_FILE = Path("signs_id.json")
 
 
 def get_marker_size_px(marker_corners):
@@ -36,6 +37,16 @@ def load_calibration():
     return tag_size_m, focal_length_px
 
 
+def load_tag_actions():
+    if not TAG_ACTIONS_FILE.exists():
+        raise FileNotFoundError(f"Arquivo {TAG_ACTIONS_FILE} não encontrado.")
+
+    with TAG_ACTIONS_FILE.open("r", encoding="utf-8") as file:
+        tag_actions = json.load(file)
+
+    return {int(tag_id): action for tag_id, action in tag_actions.items()}
+
+
 def estimate_distance_m(marker_corners, tag_size_m, focal_length_px):
     marker_size_px = get_marker_size_px(marker_corners)
 
@@ -50,6 +61,12 @@ def main():
         tag_size_m, focal_length_px = load_calibration()
     except (FileNotFoundError, KeyError, ValueError, json.JSONDecodeError) as error:
         print(f"Erro ao carregar calibração: {error}")
+        return
+
+    try:
+        tag_actions = load_tag_actions()
+    except (FileNotFoundError, ValueError, json.JSONDecodeError) as error:
+        print(f"Erro ao carregar ações das AprilTags: {error}")
         return
 
     cap = cv2.VideoCapture(0)
@@ -85,7 +102,8 @@ def main():
                     )
 
                     if distance_m is not None:
-                        print(f"ID {marker_id}: {distance_m:.2f} m")
+                        action = tag_actions.get(marker_id, "Desconhecida")
+                        print(f"ID {marker_id} ({action}): {distance_m:.2f} m")
 
             time.sleep(0.2)
     except KeyboardInterrupt:
