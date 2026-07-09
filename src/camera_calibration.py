@@ -6,7 +6,8 @@ import cv2  # Esta biblioteca é a 'opencv-contrib-python' e não a 'opencv-pyth
 import numpy as np
 
 
-CALIBRATION_FILE = Path("camera_calibration.json")
+CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
+CALIBRATION_FILE = CONFIG_DIR / "camera_calibration.json"
 DEFAULT_TAG_SIZE_M = 0.025      # 25 Centímetros
 DEFAULT_TAG_DISTANCE_M = 0.3    # 30 Centímetros
 SAMPLES_TO_COLLECT = 30
@@ -49,6 +50,8 @@ def save_calibration(tag_size_m, focal_length_px):
         "tag_size_m": round(tag_size_m, 6),
         "focal_length_px": round(focal_length_px, 2),
     }
+
+    CONFIG_DIR.mkdir(exist_ok=True)
 
     with CALIBRATION_FILE.open("w", encoding="utf-8") as file:
         json.dump(calibration, file, indent=2)

@@ -54,7 +54,7 @@ uv sync
 ### Preview do whitefilter
 
 ```bash
-python white_filter.py
+python src/white_filter.py
 ```
 
 Controles da janela:
@@ -70,15 +70,15 @@ A janela exibe três imagens lado a lado: frame original (com overlay das regiõ
 ### Calibração da câmera
 
 ```bash
-python camera_calibration.py
+python src/camera_calibration.py
 ```
 
-O script pede o tamanho real da AprilTag e a distância de referência, detecta a tag pela câmera e salva a calibração em `camera_calibration.json`.
+O script pede o tamanho real da AprilTag e a distância de referência, detecta a tag pela câmera e salva a calibração em `config/camera_calibration.json`.
 
 ### Teste da câmera
 
 ```bash
-python sign_detection.py
+python src/sign_detection.py
 ```
 
 O script identifica as AprilTags pela câmera e imprime no terminal o ID da tag, a placa associada e a distância aproximada.
@@ -87,15 +87,19 @@ O script identifica as AprilTags pela câmera e imprime no terminal o ID da tag,
 
 ```
 .
-├── camera_calibration.json  # Dados gerados pela calibração da câmera
-├── camera_calibration.py    # Calibração da câmera usando uma AprilTag de referência
-├── motores.py               # Controle dos motores DC e do servo via GPIO/PWM
-├── pyproject.toml           # Metadados e dependências do projeto
-├── requirements.txt         # Dependências do projeto para uso com pip
-├── sign_detection.py        # Detecção de placas por AprilTags no terminal
-├── signs_id.json            # Relação entre IDs das AprilTags e placas
-├── uv.lock                  # Lockfile de dependências do uv
-└── white_filter.py          # Captura de câmera, filtro de branco e lógica de direção
+├── config/
+│   ├── camera_calibration.example.json # Exemplo dos dados de calibração
+│   └── signs_id.json                   # Relação entre IDs das AprilTags e placas
+├── src/
+│   ├── camera_calibration.py           # Calibração da câmera usando uma AprilTag de referência
+│   ├── motores.py                      # Controle dos motores DC e do servo via GPIO/PWM
+│   ├── sign_detection.py               # Detecção de placas por AprilTags no terminal
+│   └── white_filter.py                 # Captura de câmera, filtro de branco e lógica de direção
+├── CONTRIBUTING.md                     # Convenções de commit do projeto
+├── README.md                           # Documentação principal
+├── pyproject.toml                      # Metadados e dependências do projeto
+├── requirements.txt                    # Dependências do projeto para uso com pip
+└── uv.lock                             # Lockfile de dependências do uv
 ```
 
 ## Convenções

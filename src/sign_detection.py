@@ -6,8 +6,9 @@ import cv2  # Esta biblioteca é a 'opencv-contrib-python' e não a 'opencv-pyth
 import numpy as np
 
 
-CALIBRATION_FILE = Path("camera_calibration.json")
-TAG_ACTIONS_FILE = Path("signs_id.json")
+CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
+CALIBRATION_FILE = CONFIG_DIR / "camera_calibration.json"
+TAG_ACTIONS_FILE = CONFIG_DIR / "signs_id.json"
 
 
 def get_marker_size_px(marker_corners):
