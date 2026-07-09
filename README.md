@@ -91,9 +91,14 @@ O script identifica as AprilTags pela câmera e imprime no terminal o ID da tag,
 │   ├── camera_calibration.example.json # Exemplo dos dados de calibração
 │   └── signs_id.json                   # Relação entre IDs das AprilTags e placas
 ├── src/
+│   ├── carro/
+│   │   ├── __init__.py
+│   │   ├── camera.py                   # Funções reutilizáveis para captura de câmera
+│   │   ├── signs.py                    # Funções reutilizáveis para detectar placas
+│   │   └── terminal.py                 # Funções auxiliares para saída no terminal
 │   ├── camera_calibration.py           # Calibração da câmera usando uma AprilTag de referência
 │   ├── motores.py                      # Controle dos motores DC e do servo via GPIO/PWM
-│   ├── sign_detection.py               # Detecção de placas por AprilTags no terminal
+│   ├── sign_detection.py               # Teste de detecção de placas no terminal
 │   └── white_filter.py                 # Captura de câmera, filtro de branco e lógica de direção
 ├── CONTRIBUTING.md                     # Convenções de commit do projeto
 ├── README.md                           # Documentação principal

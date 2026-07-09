@@ -6,69 +6,93 @@ import cv2  # Esta biblioteca é a 'opencv-contrib-python' e não a 'opencv-pyth
 import numpy as np
 
 
-CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
-CALIBRATION_FILE = CONFIG_DIR / "camera_calibration.json"
-DEFAULT_TAG_SIZE_M = 0.025      # 25 Centímetros
-DEFAULT_TAG_DISTANCE_M = 0.3    # 30 Centímetros
-SAMPLES_TO_COLLECT = 30
+PASTA_CONFIG = Path(__file__).resolve().parent.parent / "config"
+ARQUIVO_CALIBRACAO = PASTA_CONFIG / "camera_calibration.json"
+TAMANHO_PADRAO_TAG_M = 0.025      # 25 Centímetros
+DISTANCIA_PADRAO_TAG_M = 0.3      # 30 Centímetros
+AMOSTRAS_PARA_COLETAR = 30
 
 
-def get_marker_size_px(marker_corners):
-    corners = marker_corners.reshape((4, 2))
+def calcular_tamanho_tag_px(cantos_tag: np.ndarray) -> float:
+    """Calcula o tamanho médio do lado da AprilTag em pixels.
 
-    side_lengths_px = [
-        np.linalg.norm(corners[0] - corners[1]),
-        np.linalg.norm(corners[1] - corners[2]),
-        np.linalg.norm(corners[2] - corners[3]),
-        np.linalg.norm(corners[3] - corners[0]),
+    Parâmetros:
+    - cantos_tag: matriz com os quatro cantos detectados da AprilTag.
+
+    Retorna:
+    - Tamanho médio do lado da tag em pixels.
+    """
+    cantos = cantos_tag.reshape((4, 2))
+
+    tamanhos_lados_px = [
+        np.linalg.norm(cantos[0] - cantos[1]),
+        np.linalg.norm(cantos[1] - cantos[2]),
+        np.linalg.norm(cantos[2] - cantos[3]),
+        np.linalg.norm(cantos[3] - cantos[0]),
     ]
-    return float(np.mean(side_lengths_px))
+    return float(np.mean(tamanhos_lados_px))
 
 
-def ask_float(prompt, default=None):
+def pedir_float(mensagem: str, padrao: float | None = None) -> float:
+    """Pede um número decimal ao usuário pelo terminal.
+
+    Parâmetros:
+    - mensagem: texto exibido no terminal antes da entrada.
+    - padrao: valor usado quando o usuário pressiona Enter sem digitar nada.
+
+    Retorna:
+    - Número informado pelo usuário, ou o valor padrão quando ele existir.
+    """
     while True:
-        value = input(prompt).strip().replace(",", ".")
+        valor = input(mensagem).strip().replace(",", ".")
 
-        if not value and default is not None:
-            return default
+        if not valor and padrao is not None:
+            return padrao
 
         try:
-            parsed_value = float(value)
+            valor_convertido = float(valor)
         except ValueError:
             print("Digite um número válido.")
             continue
 
-        if parsed_value <= 0:
+        if valor_convertido <= 0:
             print("Digite um valor maior que zero.")
             continue
 
-        return parsed_value
+        return valor_convertido
 
 
-def save_calibration(tag_size_m, focal_length_px):
-    calibration = {
-        "tag_size_m": round(tag_size_m, 6),
-        "focal_length_px": round(focal_length_px, 2),
+def salvar_calibracao(tamanho_tag_m: float, distancia_focal_px: float) -> None:
+    """Salva os dados de calibração da câmera em um arquivo JSON.
+
+    Parâmetros:
+    - tamanho_tag_m: tamanho real do lado da AprilTag em metros.
+    - distancia_focal_px: distância focal estimada da câmera em pixels.
+    """
+    calibracao = {
+        "tag_size_m": round(tamanho_tag_m, 6),
+        "focal_length_px": round(distancia_focal_px, 2),
     }
 
-    CONFIG_DIR.mkdir(exist_ok=True)
+    PASTA_CONFIG.mkdir(exist_ok=True)
 
-    with CALIBRATION_FILE.open("w", encoding="utf-8") as file:
-        json.dump(calibration, file, indent=2)
-        file.write("\n")
+    with ARQUIVO_CALIBRACAO.open("w", encoding="utf-8") as arquivo:
+        json.dump(calibracao, arquivo, indent=2)
+        arquivo.write("\n")
 
 
-def main():
+def main() -> None:
+    """Executa a calibração da câmera usando uma AprilTag de referência."""
     print("Calibração da câmera com AprilTag")
     print("Use a mesma tag e a mesma resolução da câmera depois no sign_detection.py.\n")
 
-    tag_size_m = ask_float(
-        f"Medida com comprimento da tag em metros [{DEFAULT_TAG_SIZE_M}]: ",
-        DEFAULT_TAG_SIZE_M,
+    tamanho_tag_m = pedir_float(
+        f"Medida com comprimento da tag em metros [{TAMANHO_PADRAO_TAG_M}]: ",
+        TAMANHO_PADRAO_TAG_M,
     )
-    reference_distance_m = ask_float(
-        f"Distância da câmera até a tag, em metros [{DEFAULT_TAG_DISTANCE_M}]: ",
-        DEFAULT_TAG_DISTANCE_M,
+    distancia_referencia_m = pedir_float(
+        f"Distância da câmera até a tag, em metros [{DISTANCIA_PADRAO_TAG_M}]: ",
+        DISTANCIA_PADRAO_TAG_M,
     )
 
     input(
@@ -82,52 +106,52 @@ def main():
         print("Erro: Não foi possível acessar a webcam.")
         return
 
-    dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_APRILTAG_36h11)
-    parameters = cv2.aruco.DetectorParameters()
-    detector = cv2.aruco.ArucoDetector(dictionary, parameters)
+    dicionario = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_APRILTAG_36h11)
+    parametros = cv2.aruco.DetectorParameters()
+    detector = cv2.aruco.ArucoDetector(dicionario, parametros)
 
-    focal_length_samples = []
-    print(f"Coletando {SAMPLES_TO_COLLECT} amostras...")
+    amostras_distancia_focal = []
+    print(f"Coletando {AMOSTRAS_PARA_COLETAR} amostras...")
 
     try:
-        while len(focal_length_samples) < SAMPLES_TO_COLLECT:
-            ret, frame = cap.read()
+        while len(amostras_distancia_focal) < AMOSTRAS_PARA_COLETAR:
+            capturou, frame = cap.read()
 
-            if not ret:
+            if not capturou:
                 print("Erro: Falha ao capturar imagem.")
                 break
 
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            corners, ids, _ = detector.detectMarkers(gray)
+            cinza = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            cantos, ids, _ = detector.detectMarkers(cinza)
 
             if ids is None:
                 continue
 
-            marker_size_px = get_marker_size_px(corners[0])
+            tamanho_tag_px = calcular_tamanho_tag_px(cantos[0])
 
-            if marker_size_px <= 0:
+            if tamanho_tag_px <= 0:
                 continue
 
-            focal_length_px = (marker_size_px * reference_distance_m) / tag_size_m
-            focal_length_samples.append(focal_length_px)
+            distancia_focal_px = (tamanho_tag_px * distancia_referencia_m) / tamanho_tag_m
+            amostras_distancia_focal.append(distancia_focal_px)
 
             print(
-                f"Amostra {len(focal_length_samples):02d}/{SAMPLES_TO_COLLECT}: "
-                f"{focal_length_px:.2f} px"
+                f"Amostra {len(amostras_distancia_focal):02d}/{AMOSTRAS_PARA_COLETAR}: "
+                f"{distancia_focal_px:.2f} px"
             )
     finally:
         cap.release()
 
-    if not focal_length_samples:
+    if not amostras_distancia_focal:
         print("Nenhuma AprilTag foi detectada. Calibração não salva.")
         return
 
-    focal_length_px = statistics.median(focal_length_samples)
-    save_calibration(tag_size_m, focal_length_px)
+    distancia_focal_final_px = statistics.median(amostras_distancia_focal)
+    salvar_calibracao(tamanho_tag_m, distancia_focal_final_px)
 
-    print(f"\nCalibração salva em {CALIBRATION_FILE}:")
-    print(f"tag_size_m: {tag_size_m:.6f}")
-    print(f"focal_length_px: {focal_length_px:.2f}")
+    print(f"\nCalibração salva em {ARQUIVO_CALIBRACAO}:")
+    print(f"tag_size_m: {tamanho_tag_m:.6f}")
+    print(f"focal_length_px: {distancia_focal_final_px:.2f}")
 
 
 if __name__ == "__main__":

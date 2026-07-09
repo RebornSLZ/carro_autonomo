@@ -1,116 +1,58 @@
-import json
 import time
-from pathlib import Path
 
-import cv2  # Esta biblioteca é a 'opencv-contrib-python' e não a 'opencv-python'.
-import numpy as np
-
-
-CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
-CALIBRATION_FILE = CONFIG_DIR / "camera_calibration.json"
-TAG_ACTIONS_FILE = CONFIG_DIR / "signs_id.json"
-
-
-def get_marker_size_px(marker_corners):
-    corners = marker_corners.reshape((4, 2))
-
-    side_lengths_px = [
-        np.linalg.norm(corners[0] - corners[1]),
-        np.linalg.norm(corners[1] - corners[2]),
-        np.linalg.norm(corners[2] - corners[3]),
-        np.linalg.norm(corners[3] - corners[0]),
-    ]
-    return float(np.mean(side_lengths_px))
+from carro.camera import abrir_camera, fechar_camera, ler_frame
+from carro.signs import (
+    carregar_calibracao,
+    carregar_placas,
+    criar_detector_apriltag,
+    detectar_tags,
+)
+from carro.terminal import imprimir_tabela_placas
 
 
-def load_calibration():
-    if not CALIBRATION_FILE.exists():
-        raise FileNotFoundError(
-            f"Arquivo {CALIBRATION_FILE} não encontrado. "
-            "Execute camera_calibration.py antes."
-        )
-
-    with CALIBRATION_FILE.open("r", encoding="utf-8") as file:
-        calibration = json.load(file)
-
-    tag_size_m = float(calibration["tag_size_m"])
-    focal_length_px = float(calibration["focal_length_px"])
-    return tag_size_m, focal_length_px
-
-
-def load_tag_actions():
-    if not TAG_ACTIONS_FILE.exists():
-        raise FileNotFoundError(f"Arquivo {TAG_ACTIONS_FILE} não encontrado.")
-
-    with TAG_ACTIONS_FILE.open("r", encoding="utf-8") as file:
-        tag_actions = json.load(file)
-
-    return {int(tag_id): action for tag_id, action in tag_actions.items()}
-
-
-def estimate_distance_m(marker_corners, tag_size_m, focal_length_px):
-    marker_size_px = get_marker_size_px(marker_corners)
-
-    if marker_size_px <= 0:
-        return None
-
-    return (tag_size_m * focal_length_px) / marker_size_px
-
-
-def main():
+def main() -> None:
+    """Executa o teste de detecção de placas pela webcam."""
     try:
-        tag_size_m, focal_length_px = load_calibration()
-    except (FileNotFoundError, KeyError, ValueError, json.JSONDecodeError) as error:
+        calibracao = carregar_calibracao()
+    except (FileNotFoundError, KeyError, ValueError) as error:
         print(f"Erro ao carregar calibração: {error}")
         return
 
     try:
-        tag_actions = load_tag_actions()
-    except (FileNotFoundError, ValueError, json.JSONDecodeError) as error:
+        placas = carregar_placas()
+    except (FileNotFoundError, ValueError) as error:
         print(f"Erro ao carregar ações das AprilTags: {error}")
         return
 
-    cap = cv2.VideoCapture(0)
-
-    if not cap.isOpened():
-        print("Erro: Não foi possível acessar a webcam.")
+    try:
+        camera = abrir_camera()
+    except RuntimeError as error:
+        print(f"Erro: {error}")
         return
 
-    dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_APRILTAG_36h11)
-    parameters = cv2.aruco.DetectorParameters()
-    detector = cv2.aruco.ArucoDetector(dictionary, parameters)
+    detector = criar_detector_apriltag()
 
     print("Detectando AprilTags. Pressione Ctrl+C para encerrar.")
 
     try:
         while True:
-            ret, frame = cap.read()
+            frame = ler_frame(camera)
 
-            if not ret:
+            if frame is None:
                 print("Erro: Falha ao capturar imagem.")
                 break
 
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            corners, ids, _ = detector.detectMarkers(gray)
+            deteccoes = detectar_tags(frame, detector, calibracao, placas)
 
-            if ids is not None:
-                print("-" * 30)
-                for marker_corners, marker_id in zip(corners, ids.flatten()):
-                    distance_m = estimate_distance_m(
-                        marker_corners,
-                        tag_size_m,
-                        focal_length_px,
-                    )
-
-                    if distance_m is not None:
-                        action = tag_actions.get(marker_id, "Desconhecida")
-                        print(f"ID {marker_id} ({action}): {distance_m:.2f} m")
+            if deteccoes:
+                print("\n")
+                imprimir_tabela_placas(deteccoes)
 
             time.sleep(0.2)
     except KeyboardInterrupt:
         print("\nDetecção encerrada.")
     finally:
-        cap.release()
+        fechar_camera(camera)
 
 
 if __name__ == "__main__":
