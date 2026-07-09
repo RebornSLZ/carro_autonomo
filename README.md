@@ -23,6 +23,8 @@ Se o `RPi.GPIO` não estiver disponível (ex: rodando em um PC Windows/Linux sem
 
 ## Instalação
 
+### Utilizando o pip
+
 ```bash
 python -m venv venv
 
@@ -35,13 +37,27 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+Também é possível instalar as dependências pelo `pyproject.toml`:
+
+```bash
+pip install -e .
+```
+
+### Utilizando uv
+
+```bash
+uv sync
+```
+
 ## Uso
+
+### Preview do whitefilter
 
 ```bash
 python white_filter.py
 ```
 
-### Controles da janela
+Controles da janela:
 
 | Tecla / elemento | Ação                                      |
 |------------------|-------------------------------------------|
@@ -51,13 +67,34 @@ python white_filter.py
 
 A janela exibe três imagens lado a lado: frame original (com overlay das regiões), máscara de branco e resultado filtrado.
 
+### Calibração da câmera
+
+```bash
+python camera_calibration.py
+```
+
+O script pede o tamanho real da AprilTag e a distância de referência, detecta a tag pela câmera e salva a calibração em `camera_calibration.json`.
+
+### Teste da câmera
+
+```bash
+python apriltag.py
+```
+
+O script identifica as AprilTags pela câmera e imprime no terminal o ID da tag e a distância aproximada.
+
 ## Estrutura do projeto
 
 ```
 .
-├── motores.py       # Controle dos motores DC e do servo via GPIO/PWM
-├── white_filter.py  # Captura de câmera, filtro de branco e lógica de direção
-└── requirements.txt # Dependências do projeto
+├── apriltag.py              # Detecção de AprilTags e distância no terminal
+├── camera_calibration.json  # Dados gerados pela calibração da câmera
+├── camera_calibration.py    # Calibração da câmera usando uma AprilTag de referência
+├── motores.py               # Controle dos motores DC e do servo via GPIO/PWM
+├── pyproject.toml           # Metadados e dependências do projeto
+├── requirements.txt         # Dependências do projeto para uso com pip
+├── uv.lock                  # Lockfile de dependências do uv
+└── white_filter.py          # Captura de câmera, filtro de branco e lógica de direção
 ```
 
 ## Convenções
