@@ -70,7 +70,7 @@ A janela exibe três imagens lado a lado: frame original (com overlay das regiõ
 ### Calibração da câmera
 
 ```bash
-python src/debug/camera_calibration.py
+python src/camera_calibration.py
 ```
 
 O script pede o tamanho real da AprilTag e a distância de referência, detecta a tag pela câmera e salva a calibração em `config/camera_calibration.json`.
@@ -97,9 +97,9 @@ O script identifica as AprilTags pela câmera e imprime no terminal o ID da tag,
 │   │   ├── motores.py                  # Controle dos motores DC e do servo via GPIO/PWM
 │   │   ├── signs.py                    # Funções reutilizáveis para detectar placas
 │   │   └── terminal.py                 # Funções auxiliares para saída no terminal
+│   ├── camera_calibration.py           # Calibração obrigatória da câmera
 │   ├── debug/
 │   │   ├── __init__.py
-│   │   ├── camera_calibration.py       # Calibração da câmera usando uma AprilTag de referência
 │   │   ├── sign_detection.py           # Teste de detecção de placas no terminal
 │   │   └── white_filter.py             # Captura de câmera, filtro de branco e lógica de direção
 │   └── main.py                         # Ponto de entrada futuro do carro autônomo

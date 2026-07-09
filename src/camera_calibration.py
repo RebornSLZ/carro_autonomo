@@ -6,7 +6,7 @@ import cv2  # Esta biblioteca é a 'opencv-contrib-python' e não a 'opencv-pyth
 import numpy as np
 
 
-PASTA_CONFIG = Path(__file__).resolve().parents[2] / "config"
+PASTA_CONFIG = Path(__file__).resolve().parent.parent / "config"
 ARQUIVO_CALIBRACAO = PASTA_CONFIG / "camera_calibration.json"
 TAMANHO_PADRAO_TAG_M = 0.025      # 25 Centímetros
 DISTANCIA_PADRAO_TAG_M = 0.3      # 30 Centímetros
@@ -84,7 +84,7 @@ def salvar_calibracao(tamanho_tag_m: float, distancia_focal_px: float) -> None:
 def main() -> None:
     """Executa a calibração da câmera usando uma AprilTag de referência."""
     print("Calibração da câmera com AprilTag")
-    print("Use a mesma tag e a mesma resolução da câmera depois no src/debug/sign_detection.py.\n")
+    print("Use a mesma tag e a mesma resolução da câmera depois ao executar o programa principal.\n")
 
     tamanho_tag_m = pedir_float(
         f"Medida com comprimento da tag em metros [{TAMANHO_PADRAO_TAG_M}]: ",
