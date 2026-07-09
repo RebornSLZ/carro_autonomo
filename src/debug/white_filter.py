@@ -8,10 +8,16 @@ Controles:
   *Adicionar mais comandos pra controle do carro*
 """
 
+from pathlib import Path
+import sys
+
 import cv2
 import numpy as np
 import time
-import motores
+
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
+from utils import motores
 
 
 def criar_trackbars(janela: str) -> None:

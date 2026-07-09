@@ -1,13 +1,17 @@
 import time
+from pathlib import Path
+import sys
 
-from carro.camera import abrir_camera, fechar_camera, ler_frame
-from carro.signs import (
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
+from utils.camera import abrir_camera, fechar_camera, ler_frame
+from utils.signs import (
     carregar_calibracao,
     carregar_placas,
     criar_detector_apriltag,
     detectar_tags,
 )
-from carro.terminal import imprimir_tabela_placas
+from utils.terminal import imprimir_tabela_placas
 
 
 def main() -> None:

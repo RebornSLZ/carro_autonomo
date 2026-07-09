@@ -62,7 +62,7 @@ def carregar_calibracao(
     if not arquivo_calibracao.exists():
         raise FileNotFoundError(
             f"Arquivo {arquivo_calibracao} não encontrado. "
-            "Execute src/camera_calibration.py antes."
+            "Execute src/debug/camera_calibration.py antes."
         )
 
     with arquivo_calibracao.open("r", encoding="utf-8") as arquivo:

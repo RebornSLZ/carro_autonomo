@@ -1,4 +1,4 @@
-from carro.signs import DeteccaoPlaca
+from utils.signs import DeteccaoPlaca
 
 
 CABECALHO_TABELA_PLACAS = f"{'ID':<6}{'PLACA':<16}{'DISTÂNCIA (METROS)':>18}"
