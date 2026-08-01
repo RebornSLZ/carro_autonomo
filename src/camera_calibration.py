@@ -2,7 +2,7 @@ import json
 import statistics
 from pathlib import Path
 
-import cv2  # Esta biblioteca é a 'opencv-contrib-python' e não a 'opencv-python'.
+import cv2
 import numpy as np
 
 
