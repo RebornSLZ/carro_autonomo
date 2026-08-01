@@ -1,5 +1,4 @@
 numpy==2.4.6
-#opencv-python==4.13.0.92
-opencv-contrib-python>=5.0.0.93
+opencv-python>=5.0.0.93
 fake-rpi==0.7.1; sys_platform != "linux"
 RPi.GPIO==0.7.1; sys_platform == "linux"

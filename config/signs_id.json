@@ -1,6 +1,8 @@
 {
-  "2": "Direita",
-  "3": "Esquerda",
-  "4": "Frente",
+  "0": "No Entry",
+  "1": "Dead End",
+  "2": "Right",
+  "3": "Left",
+  "4": "Foward",
   "5": "Stop"
 }

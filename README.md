@@ -23,6 +23,8 @@ Se o `RPi.GPIO` não estiver disponível (ex: rodando em um PC Windows/Linux sem
 
 ## Instalação
 
+Este projeto utiliza **Python 3.12**.
+
 ### Utilizando o pip
 
 ```bash
