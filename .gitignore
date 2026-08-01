@@ -1,4 +1,6 @@
+.venv/
 venv/
+config/camera_calibration.json
 __pycache__/
 *.pyc
 *.png
