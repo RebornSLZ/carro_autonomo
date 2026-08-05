@@ -6,5 +6,5 @@ dependencies = [
     "fake-rpi==0.7.1 ; sys_platform != 'linux'",
     "numpy==2.4.6",
     "opencv-python>=5.0.0.93",
-    "RPi.GPIO==0.7.1 ; sys_platform == 'linux'",
+    "rpi-lgpio ; sys_platform == 'linux'",
 ]
