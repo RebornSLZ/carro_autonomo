@@ -4,5 +4,7 @@
   "2": "Right",
   "3": "Left",
   "4": "Foward",
-  "5": "Stop"
+  "5": "Stop",
+  "6": "Start Tunnel",
+  "7": "End Tunnel"
 }
