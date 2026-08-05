@@ -32,10 +32,13 @@ API pública:
 
 
 #Testa se tem GPIO, caso não tenha, entra em mockup
-try:
-    import RPi.GPIO as GPIO
-except ImportError:
-    from fake_rpi.RPi import GPIO
+# try:
+#     import RPi.GPIO as GPIO
+# except ImportError:
+#     from fake_rpi.RPi import GPIO
+
+import RPi.GPIO as GPIO
+
 
 # Pinos (BCM)
 ENA = 12
