@@ -1,9 +1,12 @@
-"""Ponto de entrada futuro do carro autônomo."""
+from utils.motores import *
 
 
 def main() -> None:
-    """Executa o programa principal do carro autônomo."""
-    print("Programa principal do carro autônomo ainda não implementado.")
+
+    iniciar(0)
+    frente()
+
+    print("FIM")
 
 
 if __name__ == "__main__":
