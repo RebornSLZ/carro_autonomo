@@ -6,6 +6,5 @@ dependencies = [
     "fake-rpi ; sys_platform != 'linux'",
     "numpy",
     "opencv-python",
-    #"RPi.GPIO ; sys_platform == 'linux'",
-    "rpi-lgpio",
+    "rpi-lgpio ; sys_platform == 'linux'",
 ]

@@ -31,13 +31,12 @@ API pública:
 """
 
 
-#Testa se tem GPIO, caso não tenha, entra em mockup
-# try:
-#     import RPi.GPIO as GPIO
-# except ImportError:
-#     from fake_rpi.RPi import GPIO
-
-import RPi.GPIO as GPIO
+# Testa se tem GPIO (seja RPi.GPIO nativa ou a rpi-lgpio).
+# Caso não tenha (ex: rodando no Windows/Mac), entra em mockup.
+try:
+    import RPi.GPIO as GPIO
+except (ImportError, RuntimeError):
+    from fake_rpi.RPi import GPIO
 
 
 # Pinos (BCM)
