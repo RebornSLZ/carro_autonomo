@@ -4,7 +4,9 @@ from utils.motores import *
 def main() -> None:
 
     iniciar(0)
-    frente()
+
+    for i in range(100):
+        direita()
 
     print("FIM")
 
