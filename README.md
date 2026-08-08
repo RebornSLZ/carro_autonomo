@@ -21,9 +21,27 @@ Se o `RPi.GPIO` não estiver disponível (ex: rodando em um PC Windows/Linux sem
 | Motor direito — IN3/IN4  | 27 / 22    |
 | Servo de direção         | 18 (PWM)   |
 
+## Requisitos (Rodar no rasp)
+
+```bash
+# Baixar pacotes necessários
+sudo apt update
+sudo apt install python3-dev python3-venv python3-pip
+sudo apt install python3-rpi-lgpio
+
+# Permissão do usuário
+sudo adduser $LOGNAME gpio
+
+# Reiniciar o sistema
+sudo reboot
+
+```
+
+
 ## Instalação
 
 Este projeto utiliza **Python 3.12**.
+
 
 ### Utilizando o pip
 
