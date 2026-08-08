@@ -37,6 +37,7 @@ try:
     import RPi.GPIO as GPIO
 except (ImportError, RuntimeError):
     from fake_rpi.RPi import GPIO
+    print("fake_rpi carregado")
 
 
 # Pinos (BCM)
