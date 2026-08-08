@@ -31,11 +31,13 @@ API pública:
 """
 
 
-#Testa se tem GPIO, caso não tenha, entra em mockup
+# Testa se tem GPIO (seja RPi.GPIO nativa ou a rpi-lgpio).
+# Caso não tenha (ex: rodando no Windows/Mac), entra em mockup.
 try:
     import RPi.GPIO as GPIO
-except ImportError:
+except (ImportError, RuntimeError):
     from fake_rpi.RPi import GPIO
+
 
 # Pinos (BCM)
 ENA = 12
@@ -154,11 +156,21 @@ def parar() -> None:
 
 def encerrar() -> None:
     """Para tudo e libera os pinos GPIO."""
+    global _pwm_esq, _pwm_dir, _pwm_servo
     parar()
+
+    # Para o PWM e limpa a variável, forçando o Python a
+    # deletar o objeto ANTES do GPIO.cleanup()
     if _pwm_esq:
         _pwm_esq.stop()
+        _pwm_esq = None
+
     if _pwm_dir:
         _pwm_dir.stop()
+        _pwm_dir = None
+
     if _pwm_servo:
         _pwm_servo.stop()
+        _pwm_servo = None
+
     GPIO.cleanup()
